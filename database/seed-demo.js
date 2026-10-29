@@ -1,0 +1,12 @@
+import 'dotenv/config';import mongoose from 'mongoose';import bcrypt from 'bcryptjs';
+import Company from '../src/models/Company.js';import User from '../src/models/User.js';import Department from '../src/models/Department.js';import Designation from '../src/models/Designation.js';import LeaveType from '../src/models/LeaveType.js';import Employee from '../src/models/Employee.js';import Attendance from '../src/models/Attendance.js';import Announcement from '../src/models/Announcement.js';import {ensureDefaultLeaveTypes} from '../src/services/bootstrapService.js';import {dateKey} from '../src/utils/date.js';
+const uri=process.env.MONGODB_URI||'mongodb://127.0.0.1:27017/hcm_lite';await mongoose.connect(uri);await mongoose.connection.dropDatabase();
+await Company.create({name:'Saylani Demo Company',officeStart:'09:00',graceMinutes:15,weekendDays:[0,6],officeRadius:150});await ensureDefaultLeaveTypes();
+const admin=await User.create({name:'System Admin',email:'admin@hcm.local',passwordHash:await bcrypt.hash('Admin123!',12),role:'admin'});
+const hr=await User.create({name:'HR Manager',email:'hr@hcm.local',passwordHash:await bcrypt.hash('Hr123456!',12),role:'hr'});
+const engineering=await Department.create({name:'Engineering',code:'ENG'});const d=await Designation.create({name:'Frontend Developer',department:engineering._id});
+const e=await Employee.create({employeeCode:'EMP001',firstName:'Demo',lastName:'Employee',email:'employee@hcm.local',department:engineering._id,designation:d._id,joinDate:new Date(new Date().getFullYear(),0,1),basicSalary:100000});
+const eu=await User.create({name:'Demo Employee',email:'employee@hcm.local',passwordHash:await bcrypt.hash('Employee123!',12),role:'employee',employee:e._id});e.user=eu._id;await e.save();
+const now=new Date();const ci=new Date(now);ci.setHours(9,5,0,0);const co=new Date(now);co.setHours(17,0,0,0);await Attendance.create({employee:e._id,dateKey:dateKey(),checkIn:ci,checkOut:co,hours:7.92,status:'present'});
+await Announcement.create({title:'Welcome to HCM Lite',body:'This demo database was created with npm run seed:demo.',audience:'all',postedBy:admin._id});
+console.log('\nDemo data ready.\nAdmin: admin@hcm.local / Admin123!\nHR: hr@hcm.local / Hr123456!\nEmployee: employee@hcm.local / Employee123!\n');await mongoose.disconnect();

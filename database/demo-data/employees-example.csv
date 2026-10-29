@@ -1,0 +1,2 @@
+employeeCode,firstName,lastName,email,phone,address,gender,department,designation,joinDate,status,basicSalary
+EMP002,Ali,Khan,ali@example.com,03001234567,Karachi,male,Engineering,Frontend Developer,2026-10-01,active,80000

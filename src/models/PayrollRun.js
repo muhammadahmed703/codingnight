@@ -1,0 +1,4 @@
+import mongoose from 'mongoose';
+const itemSchema=new mongoose.Schema({employee:{type:mongoose.Schema.Types.ObjectId,ref:'Employee'},employeeCode:String,name:String,basic:Number,hra:Number,medical:Number,gross:Number,workingDays:Number,absentDays:Number,unpaidDays:Number,halfDays:Number,deductions:Number,tax:Number,net:Number},{_id:false});
+const schema=new mongoose.Schema({month:{type:String,required:true,unique:true},status:{type:String,enum:['draft','finalized'],default:'draft'},items:[itemSchema],totals:{gross:Number,deductions:Number,tax:Number,net:Number},createdBy:{type:mongoose.Schema.Types.ObjectId,ref:'User'},finalizedBy:{type:mongoose.Schema.Types.ObjectId,ref:'User'},finalizedAt:Date},{timestamps:true});
+export default mongoose.models.PayrollRun || mongoose.model('PayrollRun',schema);

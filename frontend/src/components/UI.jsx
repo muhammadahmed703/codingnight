@@ -1,0 +1,4 @@
+export function PageTitle({title,subtitle,action}){return <div className="mb-6 flex flex-wrap items-end justify-between gap-3"><div><h1 className="text-2xl font-black text-slate-900 md:text-3xl">{title}</h1>{subtitle&&<p className="mt-1 text-sm text-slate-500">{subtitle}</p>}</div>{action}</div>}
+export function Stat({label,value,help}){return <div className="card"><div className="text-xs font-bold uppercase tracking-wide text-slate-400">{label}</div><div className="mt-2 text-3xl font-black">{value}</div>{help&&<div className="mt-1 text-xs text-slate-500">{help}</div>}</div>}
+export function Empty({text='No records yet.'}){return <div className="card text-center text-sm text-slate-500">{text}</div>}
+export function Alert({text,type='error'}){if(!text)return null;return <div className={`mb-4 rounded-xl px-4 py-3 text-sm ${type==='error'?'bg-rose-50 text-rose-700':'bg-emerald-50 text-emerald-700'}`}>{text}</div>}

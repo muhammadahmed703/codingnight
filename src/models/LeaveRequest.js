@@ -1,0 +1,3 @@
+import mongoose from 'mongoose';
+const schema=new mongoose.Schema({employee:{type:mongoose.Schema.Types.ObjectId,ref:'Employee',required:true},leaveType:{type:mongoose.Schema.Types.ObjectId,ref:'LeaveType',required:true},start:{type:Date,required:true},end:{type:Date,required:true},workingDays:{type:Number,required:true},reason:{type:String,required:true},status:{type:String,enum:['pending','approved','rejected','cancelled'],default:'pending'},reviewComment:String,reviewedBy:{type:mongoose.Schema.Types.ObjectId,ref:'User'}},{timestamps:true});
+export default mongoose.models.LeaveRequest || mongoose.model('LeaveRequest',schema);

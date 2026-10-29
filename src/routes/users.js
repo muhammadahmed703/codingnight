@@ -1,0 +1,7 @@
+import { Router } from 'express'; import bcrypt from 'bcryptjs'; import User from '../models/User.js'; import {auth,allow} from '../middleware/auth.js'; import {asyncHandler,badRequest} from '../utils/http.js'; import {audit} from '../middleware/audit.js';
+const r=Router(); r.use(auth,allow('admin'));
+r.get('/',asyncHandler(async(_req,res)=>res.json(await User.find().select('-passwordHash').sort('-createdAt'))));
+r.post('/hr',asyncHandler(async(req,res)=>{const {name,email,password='TempPass123!'}=req.body;if(!name||!email) throw badRequest('Name and email required'); const u=await User.create({name,email:email.toLowerCase(),passwordHash:await bcrypt.hash(password,12),role:'hr',mustChangePassword:true}); await audit(req,'CREATE','User',u._id,null,{name:u.name,email:u.email,role:u.role}); res.status(201).json({user:{id:u._id,name:u.name,email:u.email,role:u.role},temporaryPassword:password});}));
+r.patch('/:id/status',asyncHandler(async(req,res)=>{const u=await User.findByIdAndUpdate(req.params.id,{active:!!req.body.active},{new:true}).select('-passwordHash'); await audit(req,'UPDATE_STATUS','User',u._id,null,{active:u.active}); res.json(u);}));
+r.post('/:id/reset-password',asyncHandler(async(req,res)=>{const password=req.body.password||'TempPass123!'; const u=await User.findById(req.params.id); u.passwordHash=await bcrypt.hash(password,12);u.mustChangePassword=true;await u.save();await audit(req,'RESET_PASSWORD','User',u._id);res.json({message:'Password reset',temporaryPassword:password});}));
+export default r;
